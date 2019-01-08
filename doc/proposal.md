@@ -15,3 +15,5 @@ When I log into the "Wine Buyer" app, I see a map of the world and a list of var
 I would also like to identify which countries or regions have the highest-rated wines in the varieties that are most popular with our customers.  I need to foster strategic relationships with the suppliers of those regions, and I will feature curated selections from them so that we can buy from them in higher volumes to get better price discounts.
 
 # Description of app & initial sketch
+
+![](../img/milestone1-sketch.png)
