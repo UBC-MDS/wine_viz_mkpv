@@ -11,13 +11,13 @@ We will be visualizing 129,907 instances of wine reviews from WineEnthusiast wit
 
 As a wine buyer for a restaurant group, I want to reduce the many available wines to a shortlist that match certain criteria so that I have a manageable number of them to consider tasting for inclusion on the wine list. It is important that I can narrow my results by the features that I balance the wine list across to correspond with the menus my restaurant has. The ideal wines for shortlisting have at least an above average price-rating ratio to help identify wines that provide the best value.
 
-When I log into the "Wine Buyer" application, I want to be able to see map of the highest rated regions in the world and a list of variables in the dataset. I filter the data by the variables representing the features of the wines that I will need to balance out the wine list. I then choose the final shortlist based on the price-rating ratio combined with the details that best suit our tasting menus. 
+When I log into the "Wine Buyer" application, I want to be able to see a map of the highest rated regions in the world and a list of variables in the dataset. I filter the data by the variables representing the features of the wines that I will need to balance out the wine list. I then choose the final shortlist based on the price-rating ratio combined with the details that best suit our tasting menus. 
 
 I would also like to identify which countries or regions have the highest-rated wines in the varieties that are most popular with our customers. I need to foster strategic relationships with the suppliers of those regions, and I will feature curated selections from them so that we can buy from them in higher volumes to get better price discounts.
 
 # Description of app & initial sketch
 
-This exploratory visualization of the wine ratings allows the user to first have a world view of the average rating per nation that is selectable. There will also be dropdown and filter selections available on the left hand side of the dashboard. From there, the top ratings of the different varieties of grape are shown. Perhaps the user can use this to find the most highly rated varieties of wine. Next, a scatterplot showing the price and rating for each bottle. This may appear to be overly crowded at first, but the aim is to have the user filter first by first showing them a world-view of the ratings, then digging deeper with varieties, regions, and points. 
+This exploratory visualization of the wine ratings allows the user to first have a world view of the average rating per nation that is selectable. There will also be dropdown and filter selections available on the left-hand side of the dashboard. From there, the top ratings of the different varieties of grape are shown. Perhaps the user can use this to find the most highly rated varieties of wine. Next, a scatterplot showing the price and rating for each bottle. This may appear to be overly crowded at first, but the aim is to have the user filter first by country showing them a world-view of the ratings, then digging deeper with varieties, regions, and points. 
 
 ![](../img/milestone1-sketch.png)
 
