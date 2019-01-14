@@ -9,11 +9,11 @@ We will be visualizing 129,907 instances of [wine ratings](https://www.kaggle.co
 
 # Usage scenario & tasks
 
-As a wine buyer for a restaurant group, I want to reduce the many available wines to a shortlist that match certain criteria so that I have a manageable number of them to consider tasting for inclusion on the wine list. It is important that I can narrow my results by the features that I balance the wine list across to correspond with the menus my restaurant has. The ideal wines for shortlisting have at least an above average price-rating ratio to help identify wines that provide the best value.
+As a wine buyer for a restaurant group, I want to reduce the many available wines to a shortlist that match certain criteria so that I have a manageable number of them to consider tasting for inclusion on the wine list. It is important that I can narrow my results by the features that I balance the wine list across to correspond with the menus my restaurant has. The ideal wines for shortlisting have at least an above average price-rating ratio which helps me identify wines that provide the best value.
 
-When I log into the "Wine Buyer" application, I want to be able to see a map of the highest rated regions in the world and a list of variables in the dataset. I filter the data by the variables representing the features of the wines that I will need to balance out the wine list. I then choose the final shortlist based on the price-rating ratio combined with the details that best suit our tasting menus. 
+When I log into the "Wine Buyer" application, I want to be able to see a map of the highest rated regions in the world and a list of selection features. I filter the wines by the features that I will need to balance out the wine list. Using the results from the app, I can then assemble my final shortlist of wines based on the price-rating ratio combined with the details that best suit our tasting menus. 
 
-I would also like to identify which countries or regions have the highest-rated wines in the varieties that are most popular with our customers. I need to foster strategic relationships with the suppliers of those regions, and I will feature curated selections from them so that we can buy from them in higher volumes to get better price discounts.
+I would also like to identify which countries or regions have the highest-rated wines in the varieties that are most popular with our customers. I need to foster strategic relationships with the suppliers of those regions, and I will feature curated selections from them so that we can buy from them in higher volumes to get better price discounts.  The app helps me do this because I can filter by specific varieties and then see which countries or regions have the highest-rated wines for those varieties.
 
 # Description of app & initial sketch
 
