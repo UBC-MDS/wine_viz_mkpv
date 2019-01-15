@@ -2,6 +2,7 @@ library(shiny)
 library(tidyverse)
 library(countrycode)
 library(ggplot2)
+library(plotly)
 
 
 ui <- fluidPage(
@@ -21,7 +22,7 @@ ui <- fluidPage(
                       column(6,
                              plotlyOutput("variety")),
                       column(6,
-                             plotlyOutput("test"))))
+                             plotlyOutput("price_rate"))))
         )
 
     )
@@ -30,11 +31,12 @@ server <- function(input, output) {
     
     
     
-    data_filter <- reactive(
+    data_filter <- reactive({
         data %>% 
             filter(points > input$WineRating[1],
                    points < input$WineRating[2],
-                   country == input$WineCountry))
+                   country == input$WineCountry)
+        })
     
     
     output$map <- renderPlotly(
@@ -68,13 +70,20 @@ server <- function(input, output) {
                         orientation = 'h') %>% 
                 layout(xaxis = list(range = c(80, 100))))
 
+    output$price_rate <- renderPlotly({
+        
+        # build plot with ggplot syntax
+        p <- data_filter() %>%
+                ggplot(aes(x = points,
+                           y = price,
+                           colour = variety,
+                           text = paste(title, "<br>Rating:", points, "      Price:", price))) +
+                geom_point(alpha = (1/3)) +
+                theme(legend.position="none")
+        
+        ggplotly(p, tooltip = "text")
+    })
     
-    output$test <- renderPlotly(
-            data_filter() %>% 
-                plot_ly(x = ~points,
-                        type = "histogram",
-                        histnorm = "probability"))
-
 }
 
 
