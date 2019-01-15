@@ -3,7 +3,10 @@ library(tidyverse)
 library(countrycode)
 library(ggplot2)
 library(plotly)
+library(viridisLite)
 
+# run the data wrangling script
+source("initial_wrangling.R")
 
 ui <- fluidPage(
     titlePanel("Wine Rating App", 
@@ -66,9 +69,11 @@ server <- function(input, output) {
                 arrange(desc(avg_points)) %>% 
                 plot_ly(x = ~avg_points, 
                         y = ~variety, 
+                        color = ~variety,
+                        colors = viridis(10),
                         type = 'bar', 
                         orientation = 'h') %>% 
-                layout(xaxis = list(range = c(80, 100))))
+                layout(xaxis = list(range = c(80, 100)), showlegend=FALSE ))
 
     output$price_rate <- renderPlotly({
         
@@ -79,9 +84,10 @@ server <- function(input, output) {
                            colour = variety,
                            text = paste(title, "<br>Rating:", points, "      Price:", price))) +
                 geom_point(alpha = (1/3)) +
+                scale_color_viridis_d(10) +
                 theme(legend.position="none")
         
-        ggplotly(p, tooltip = "text")
+        ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
     })
     
 }
