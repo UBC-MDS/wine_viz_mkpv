@@ -4,6 +4,8 @@ library(countrycode)
 library(ggplot2)
 library(plotly)
 
+# run the data wrangling script
+source("initial_wrangling.R")
 
 ui <- fluidPage(
     titlePanel("Wine Rating App", 
