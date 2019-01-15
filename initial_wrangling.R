@@ -44,3 +44,4 @@ full_data$my_text = paste("The average rating is: " ,
                           if_else(full_data$avg_rating == 80, "No data", 
                                   as.character(round(full_data$avg_rating,2))), 
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
+
