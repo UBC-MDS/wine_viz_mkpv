@@ -81,7 +81,7 @@ server <- function(input, output) {
                 geom_point(alpha = (1/3)) +
                 theme(legend.position="none")
         
-        ggplotly(p, tooltip = "text")
+        ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
     })
     
 }
