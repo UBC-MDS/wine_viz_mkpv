@@ -15,15 +15,16 @@ ui <- fluidPage(
                         label = "Choose a Country",
                         choices = country,
                         multiple = TRUE,
-                        selected = TRUE)),
-        mainPanel(
-                  plotlyOutput("map"),
-                  verbatimTextOutput("event"),
-                  plotlyOutput("price_hist")
-                  )
-    )
-)
+                        selected = 'Canada')),
+        mainPanel(plotlyOutput("map"),
+                  fluidRow(
+                      column(6,
+                             plotlyOutput("variety")),
+                      column(6,
+                             plotlyOutput("test"))))
+        )
 
+    )
 
 server <- function(input, output) {
     
@@ -33,8 +34,8 @@ server <- function(input, output) {
         data %>% 
             filter(points > input$WineRating[1],
                    points < input$WineRating[2],
-                   country == input$WineCountry)
-    )
+                   country == input$WineCountry))
+    
     
     output$map <- renderPlotly(
         plot_geo(full_data) %>%
@@ -51,18 +52,28 @@ server <- function(input, output) {
                 geo = list(showframe = FALSE,
                            showcoastlines = FALSE,
                            projection = list(type = 'Mercator'))
-            ) %>% hide_colorbar()
-        )
+            ) %>% hide_colorbar())
     
-    
-    
-    output$price_hist <- renderPlotly(
-        data_filter() %>% 
-            plot_ly(x = ~points,
-                   type = "histogram",
-                   histnorm = "probability"))
-    
+    output$variety <- renderPlotly(
+            data_filter() %>% 
+                select(variety, points) %>% 
+                group_by(variety) %>% 
+                summarise(avg_points = mean(points)) %>% 
+                filter(variety != "") %>% 
+                top_n(10) %>% 
+                arrange(desc(avg_points)) %>% 
+                plot_ly(x = ~avg_points, 
+                        y = ~variety, 
+                        type = 'bar', 
+                        orientation = 'h') %>% 
+                layout(xaxis = list(range = c(80, 100))))
 
+    
+    output$test <- renderPlotly(
+            data_filter() %>% 
+                plot_ly(x = ~points,
+                        type = "histogram",
+                        histnorm = "probability"))
 
 }
 

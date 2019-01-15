@@ -1,30 +1,46 @@
 library(tidyverse)
-library(countrycode)
 library(plotly)
+library(countrycode)
+library(gridExtra)
 
+#dataread
 data <- read.csv("data/winemag-data-130k-v2.csv", stringsAsFactors = FALSE)
 
+#setting as factor
 data$country <- as.factor(data$country)
 
+#filtering out specific values and columns
 data <- data %>% 
   select(-X, -region_2, -taster_twitter_handle) %>% 
-  filter(country != "") %>% 
+  filter(country != "",
+         variety != "")%>% 
   mutate(country = if_else(country =="England", "United Kingdom", as.character(country)),
          countrycodes = countrycode(country, 'country.name', 'iso3c'))
 
+#filter values
 country <- as.character(unique(data$country))
+region <- as.character(unique(data$region_1))
 
-avg_data <- data %>% group_by(country, countrycodes) %>% summarise(avg_rating = mean(points))
+##### for map
+avg_data <- data %>% group_by(country, countrycodes) %>% 
+            summarise(avg_rating = mean(points))
 
+#reading lookup table
 countrydata <- read_csv('data/countrynames.csv')
 countrydata$country <- as.factor(countrydata$country)
 countrydata$countrycodes <- as.factor(countrydata$countrycodes)
 
-full_data <- countrydata %>% left_join(avg_data, by="countrycodes") %>% select(country.x, countrycodes, avg_rating)
+
+#joining lookup table with average ratings
+full_data <- countrydata %>%
+              left_join(avg_data, by="countrycodes") %>% 
+              select(country.x, countrycodes, avg_rating)
 
 full_data <- full_data %>% 
   filter(country.x != "Antarctica") %>% 
   mutate(avg_rating = if_else(is.na(avg_rating), 80 ,avg_rating))
 
-full_data$my_text = paste("The average rating is: " , if_else(full_data$avg_rating == 80, "No data", as.character(round(full_data$avg_rating,2))), 
+full_data$my_text = paste("The average rating is: " , 
+                          if_else(full_data$avg_rating == 80, "No data", 
+                                  as.character(round(full_data$avg_rating,2))), 
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
