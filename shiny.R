@@ -69,9 +69,7 @@ server <- function(input, output) {
                 arrange(desc(avg_points)) %>% 
                 plot_ly(x = ~avg_points, 
                         y = ~variety, 
-                        color = ~variety,
-                        colors = viridis(10),
-                        type = 'bar', 
+                        type = 'bar',
                         orientation = 'h') %>% 
                 layout(xaxis = list(range = c(80, 100)), showlegend=FALSE ))
 
@@ -81,10 +79,14 @@ server <- function(input, output) {
         p <- data_filter() %>%
                 ggplot(aes(x = points,
                            y = price,
-                           colour = variety,
-                           text = paste(title, "<br>Rating:", points, "      Price:", price))) +
-                geom_point(alpha = (1/3)) +
-                scale_color_viridis_d(10) +
+                           colour = 'blue',
+                           text = paste(title_wrapped, 
+                                        "  |  $",  price,
+                                        " Points:", points, 
+                                        " Var:", variety,
+                                        sep = ""))) +
+                geom_jitter(alpha = .5, color = 'cyan4', width = .15) +
+                theme_bw() +
                 theme(legend.position="none")
         
         ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
