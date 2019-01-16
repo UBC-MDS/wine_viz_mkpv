@@ -45,3 +45,11 @@ full_data$my_text = paste("The average rating is: " ,
                                   as.character(round(full_data$avg_rating,2))), 
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
 
+
+# Add line break for tooltip display
+data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"), 
+                            "<BR>",
+                            str_match(data$title, "\\(.*"),
+                            sep = "")
+  
+
