@@ -2,7 +2,15 @@ library(shiny)
 library(tidyverse)
 library(countrycode)
 library(ggplot2)
+<<<<<<< HEAD
 library(shinyWidgets)
+=======
+library(plotly)
+library(viridisLite)
+
+# run the data wrangling script
+source("initial_wrangling.R")
+>>>>>>> upstream/master
 
 ui <- fluidPage(
     titlePanel("Wine Rating App", 
@@ -36,7 +44,7 @@ ui <- fluidPage(
                       column(6,
                              plotlyOutput("variety")),
                       column(6,
-                             plotlyOutput("test"))))
+                             plotlyOutput("price_rate"))))
         )
 
     )
@@ -53,12 +61,18 @@ server <- function(session, input, output) {
                          c(data$region_1[which(data$country == input$WineCountry)]))
     })
     
-    data_filter <- reactive(
+    data_filter <- reactive({
         data %>% 
             filter(points > input$WineRating[1],
                    points < input$WineRating[2],
+<<<<<<< HEAD
                    country == output$WineCountry,
                    variety == input$WineVariety))
+=======
+                   country == input$WineCountry)
+        })
+    
+>>>>>>> upstream/master
     
     output$map <- renderPlotly(
         plot_geo(full_data) %>%
@@ -87,8 +101,9 @@ server <- function(session, input, output) {
                 arrange(desc(avg_points)) %>% 
                 plot_ly(x = ~avg_points, 
                         y = ~variety, 
-                        type = 'bar', 
+                        type = 'bar',
                         orientation = 'h') %>% 
+<<<<<<< HEAD
                 layout(xaxis = list(range = c(80, 100), title = ""), 
                        yaxis = list(title = ""), font = list(size = 10)))
             
@@ -100,6 +115,29 @@ server <- function(session, input, output) {
                         histnorm = "probability"))
 
 
+=======
+                layout(xaxis = list(range = c(80, 100)), showlegend=FALSE ))
+
+    output$price_rate <- renderPlotly({
+        
+        # build plot with ggplot syntax
+        p <- data_filter() %>%
+                ggplot(aes(x = points,
+                           y = price,
+                           colour = 'blue',
+                           text = paste(title_wrapped, 
+                                        "  |  $",  price,
+                                        " Points:", points, 
+                                        " Var:", variety,
+                                        sep = ""))) +
+                geom_jitter(alpha = .5, color = 'cyan4', width = .15) +
+                theme_bw() +
+                theme(legend.position="none")
+        
+        ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
+    })
+    
+>>>>>>> upstream/master
 }
 
 

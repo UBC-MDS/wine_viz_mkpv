@@ -47,6 +47,7 @@ full_data$my_text = paste("The average rating is: " ,
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
 
 
+<<<<<<< HEAD
 
 
 
@@ -54,3 +55,12 @@ observeEvent(
   input$WineCountry,
   updateSelectInput(session, "WineRegion", "Choose a Region", 
                     choices = data$region_1[data$country==input$WineCountry]))
+=======
+# Add line break for tooltip display
+data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"), 
+                            "<BR>",
+                            str_match(data$title, "\\(.*"),
+                            sep = "")
+  
+
+>>>>>>> upstream/master
