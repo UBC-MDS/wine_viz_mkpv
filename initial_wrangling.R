@@ -20,6 +20,7 @@ data <- data %>%
 #filter values
 country <- as.character(unique(data$country))
 region <- as.character(unique(data$region_1))
+variety <- as.character(unique(data$variety))
 
 ##### for map
 avg_data <- data %>% group_by(country, countrycodes) %>% 
@@ -44,3 +45,12 @@ full_data$my_text = paste("The average rating is: " ,
                           if_else(full_data$avg_rating == 80, "No data", 
                                   as.character(round(full_data$avg_rating,2))), 
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
+
+
+
+
+
+observeEvent(
+  input$WineCountry,
+  updateSelectInput(session, "WineRegion", "Choose a Region", 
+                    choices = data$region_1[data$country==input$WineCountry]))

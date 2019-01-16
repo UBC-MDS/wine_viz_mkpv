@@ -2,7 +2,7 @@ library(shiny)
 library(tidyverse)
 library(countrycode)
 library(ggplot2)
-
+library(shinyWidgets)
 
 ui <- fluidPage(
     titlePanel("Wine Rating App", 
@@ -11,11 +11,26 @@ ui <- fluidPage(
         sidebarPanel(
             sliderInput("WineRating", "Select your desired rating range.",
                         min = 80, max = 100, value = c(80,100)),
-            selectInput("WineCountry", 
+            
+            sliderInput("WinePrice", "Select your desired price range.",
+                        min = 0, max = 10000, value = c(0,10000)),
+            
+            pickerInput("WineCountry", 
                         label = "Choose a Country",
                         choices = country,
+                        options = list(`actions-box` = TRUE),
                         multiple = TRUE,
-                        selected = 'Canada')),
+                        selected = "All"),
+            
+            uiOutput('WineRegion'),
+        
+            pickerInput("WineVariety",
+                        label = "Choose a Wine Variety",
+                        choices = variety,
+                        options = list(`actions-box` = TRUE),
+                        multiple = TRUE,
+                        selected = "")),
+                
         mainPanel(plotlyOutput("map"),
                   fluidRow(
                       column(6,
@@ -26,16 +41,24 @@ ui <- fluidPage(
 
     )
 
-server <- function(input, output) {
+server <- function(session, input, output) {
     
+    output$WineCountry <- renderUI({
+        selectInput('WineCountry', 'Country', sort(unique(data$country)))
+    })
     
+    output$WineRegion <- renderUI({
+        if (is.null(input$WineCountry) || input$WineCountry == ""){return()}
+        else selectInput('WineRegion', "Region", 
+                         c(data$region_1[which(data$country == input$WineCountry)]))
+    })
     
     data_filter <- reactive(
         data %>% 
             filter(points > input$WineRating[1],
                    points < input$WineRating[2],
-                   country == input$WineCountry))
-    
+                   country == output$WineCountry,
+                   variety == input$WineVariety))
     
     output$map <- renderPlotly(
         plot_geo(full_data) %>%
@@ -66,14 +89,16 @@ server <- function(input, output) {
                         y = ~variety, 
                         type = 'bar', 
                         orientation = 'h') %>% 
-                layout(xaxis = list(range = c(80, 100))))
-
+                layout(xaxis = list(range = c(80, 100), title = ""), 
+                       yaxis = list(title = ""), font = list(size = 10)))
+            
     
     output$test <- renderPlotly(
             data_filter() %>% 
                 plot_ly(x = ~points,
                         type = "histogram",
                         histnorm = "probability"))
+
 
 }
 
