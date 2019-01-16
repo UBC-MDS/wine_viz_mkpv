@@ -70,6 +70,7 @@ server <- function(input, output) {
                 plot_ly(x = ~avg_points, 
                         y = ~variety, 
                         type = 'bar',
+                        color = I("cyan4"),
                         orientation = 'h') %>% 
                 layout(xaxis = list(range = c(80, 100)), showlegend=FALSE ))
 
