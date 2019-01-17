@@ -68,30 +68,32 @@ server <- function(input, output) {
                 top_n(10) %>% 
                 arrange(desc(avg_points)) %>% 
                 plot_ly(x = ~avg_points, 
-                        y = ~variety, 
+                        y = ~variety,
+                        color = ~avg_points, 
                         type = 'bar',
-                        color = I("cyan4"),
+                        colors = 'RdPu',
                         orientation = 'h') %>% 
-                layout(xaxis = list(range = c(80, 100)), showlegend=FALSE ))
+                layout(xaxis = list(range = c(80, 100)), showlegend=FALSE )
+            %>% hide_colorbar())
 
-    output$price_rate <- renderPlotly({
-        
-        # build plot with ggplot syntax
-        p <- data_filter() %>%
-                ggplot(aes(x = points,
-                           y = price,
-                           colour = 'blue',
-                           text = paste(title_wrapped, 
-                                        "  |  $",  price,
-                                        " Points:", points, 
-                                        " Var:", variety,
-                                        sep = ""))) +
-                geom_jitter(alpha = .5, color = 'cyan4', width = .15) +
-                theme_bw() +
-                theme(legend.position="none")
-        
-        ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
-    })
+    # output$price_rate <- renderPlotly({
+    #     
+    #     # build plot with ggplot syntax
+    #     p <- data_filter() %>%
+    #             ggplot(aes(x = points,
+    #                        y = price,
+    #                        colour = 'blue',
+    #                        text = paste(title_wrapped, 
+    #                                     "  |  $",  price,
+    #                                     " Points:", points, 
+    #                                     " Var:", variety,
+    #                                     sep = ""))) +
+    #             geom_jitter(alpha = .5, color = 'cyan4', width = .15) +
+    #             theme_bw() +
+    #             theme(legend.position="none")
+    #     
+    #     ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
+    # })
     
 }
 
