@@ -2,15 +2,12 @@ library(shiny)
 library(tidyverse)
 library(countrycode)
 library(ggplot2)
-<<<<<<< HEAD
 library(shinyWidgets)
-=======
 library(plotly)
 library(viridisLite)
 
 # run the data wrangling script
 source("initial_wrangling.R")
->>>>>>> upstream/master
 
 ui <- fluidPage(
     titlePanel("Wine Rating App", 
@@ -26,18 +23,20 @@ ui <- fluidPage(
             pickerInput("WineCountry", 
                         label = "Choose a Country",
                         choices = country,
-                        options = list(`actions-box` = TRUE),
                         multiple = TRUE,
-                        selected = "All"),
+                        options = list(`actions-box` = TRUE),
+                        selected = country),
             
             uiOutput('WineRegion'),
+            
+            uiOutput('WineVariety')),
         
-            pickerInput("WineVariety",
-                        label = "Choose a Wine Variety",
-                        choices = variety,
-                        options = list(`actions-box` = TRUE),
-                        multiple = TRUE,
-                        selected = "")),
+            #pickerInput("WineVariety",
+            #            label = "Choose a Wine Variety",
+            #            choices = variety,
+            #            multiple = TRUE,
+            #            options = list(`actions-box` = TRUE),
+            #            selected = variety)),
                 
         mainPanel(plotlyOutput("map"),
                   fluidRow(
@@ -49,33 +48,67 @@ ui <- fluidPage(
 
     )
 
-server <- function(session, input, output) {
+server <- function(input, output, session) {
     
-    output$WineCountry <- renderUI({
-        selectInput('WineCountry', 'Country', sort(unique(data$country)))
-    })
+    #observe({
+     #   if("(All)" %in% input$WineCountry)
+     #       selected_countries = country[-c(1,2)] #choose all countries 
+     #   else
+     #       selected_countries = input$WineCountry
+     #   updateSelectInput(session, "WineCountry", selected = selected_countries)
+    #})
+    
+    #output$selected <- renderText({
+    #    paste(input$WineCountry, collapse = ',')
+    #})
+    
+    #observe({
+    #    if("(All)" %in% input$WineVariety)
+    #        selected_variety = variety[-c(1,2)] #choose all countries 
+    #    else
+    #        selected_variety = input$WineVariety
+    #    updateSelectInput(session, "WineVariety", selected = selected_variety)
+    #})
+    
+    #output$selectedVariety <- renderText({
+    #    paste(input$WineVariety, collapse = ',')
+    #})
+    
+    #output$WineCountry <- renderUI({
+    #    selectInput('WineCountry', 'Country', sort(unique(data$country)))
+    #})
     
     output$WineRegion <- renderUI({
         if (is.null(input$WineCountry) || input$WineCountry == ""){return()}
-        else selectInput('WineRegion', "Region", 
-                         c(data$region_1[which(data$country == input$WineCountry)]))
+        else pickerInput('WineRegion', "Region", 
+                         choices = c(unique(sort(data$region_1[which(data$country == input$WineCountry)]))),
+                         options = list(`actions-box` = TRUE),
+                         multiple = TRUE)
+    })
+    
+    output$WineVariety <- renderUI({
+        pickerInput('WineVariety', "Variety", 
+                         choices = c(unique(sort(data$variety[which(data$country == input$WineCountry)]))),
+                         multiple = TRUE, 
+                         options = list(`actions-box` = TRUE),
+                         selected = variety)
     })
     
     data_filter <- reactive({
         data %>% 
             filter(points > input$WineRating[1],
                    points < input$WineRating[2],
-<<<<<<< HEAD
-                   country == output$WineCountry,
-                   variety == input$WineVariety))
-=======
+                   price > input$WinePrice[1],
+                   price < input$WinePrice[2],
+                   variety == input$WineVariety,
                    country == input$WineCountry)
         })
     
->>>>>>> upstream/master
+    
     
     output$map <- renderPlotly(
-        plot_geo(full_data) %>%
+        full_data %>% #filter(country.x == input$WineCountry) %>% 
+        plot_geo() %>%
             add_trace(
                 z = ~avg_rating,
                 color = ~avg_rating, 
@@ -103,20 +136,8 @@ server <- function(session, input, output) {
                         y = ~variety, 
                         type = 'bar',
                         orientation = 'h') %>% 
-<<<<<<< HEAD
                 layout(xaxis = list(range = c(80, 100), title = ""), 
                        yaxis = list(title = ""), font = list(size = 10)))
-            
-    
-    output$test <- renderPlotly(
-            data_filter() %>% 
-                plot_ly(x = ~points,
-                        type = "histogram",
-                        histnorm = "probability"))
-
-
-=======
-                layout(xaxis = list(range = c(80, 100)), showlegend=FALSE ))
 
     output$price_rate <- renderPlotly({
         
@@ -137,7 +158,7 @@ server <- function(session, input, output) {
         ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
     })
     
->>>>>>> upstream/master
+
 }
 
 

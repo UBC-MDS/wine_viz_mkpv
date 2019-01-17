@@ -1,7 +1,6 @@
 library(tidyverse)
 library(plotly)
 library(countrycode)
-library(gridExtra)
 
 #dataread
 data <- read.csv("data/winemag-data-130k-v2.csv", stringsAsFactors = FALSE)
@@ -19,8 +18,14 @@ data <- data %>%
 
 #filter values
 country <- as.character(unique(data$country))
+#country<- c(country, c("(All)","(Deselect All)"))
+country <- sort(country)
 region <- as.character(unique(data$region_1))
 variety <- as.character(unique(data$variety))
+#variety <- c(variety, c("(All)","(Deselect All)"))
+variety <- sort(variety)
+
+
 
 ##### for map
 avg_data <- data %>% group_by(country, countrycodes) %>% 
@@ -47,15 +52,7 @@ full_data$my_text = paste("The average rating is: " ,
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
 
 
-<<<<<<< HEAD
 
-
-
-observeEvent(
-  input$WineCountry,
-  updateSelectInput(session, "WineRegion", "Choose a Region", 
-                    choices = data$region_1[data$country==input$WineCountry]))
-=======
 # Add line break for tooltip display
 data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"), 
                             "<BR>",
@@ -63,4 +60,10 @@ data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"),
                             sep = "")
   
 
->>>>>>> upstream/master
+
+# testing
+
+#observeEvent(
+#  input$WineCountry,
+#  updateSelectInput(session, "WineRegion", "Choose a Region", 
+#                    choices = data$region_1[data$country==input$WineCountry]))
