@@ -19,20 +19,25 @@ Our vision has stayed roughly the same since our initial sketch, except for a co
 
 ## Screenshots
 
-This is the initial view of our app with all of the features selected to be "Select All":
+This is the initial view below of our app with all of the features selected to be "Select All":
 
 ![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-full.png)
 
 
 
-This is a filtered view of our app to only include wines from the Niagara region in Canada:
+This screenshot below is a filtered view of our app to only include wines from the Niagara region in Canada:
+
 ![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-filtered.png)
 
 
-This shows our conditional filtering within our dropdown menus. When "Canada" is select as the country, only regions within Canada are shown. 
+
+This screenshot below  shows our conditional filtering within our dropdown menus. When "Canada" is select as the country, only regions within Canada are shown. 
+
 ![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-filtered.png)
 
 
-This view shows what is included within our tooltips in our Plotly graphs. 
+
+This screenshot below shows what is included within our tooltips in our Plotly graphs. 
+
 ![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-tooltip.png)
 
