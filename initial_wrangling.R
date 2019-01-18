@@ -1,7 +1,6 @@
 library(tidyverse)
 library(plotly)
 library(countrycode)
-library(gridExtra)
 
 #dataread
 data <- read.csv("data/winemag-data-130k-v2.csv", stringsAsFactors = FALSE)
@@ -19,7 +18,12 @@ data <- data %>%
 
 #filter values
 country <- as.character(unique(data$country))
+country <- sort(country)
 region <- as.character(unique(data$region_1))
+variety <- as.character(unique(data$variety))
+variety <- sort(variety)
+
+
 
 ##### for map
 avg_data <- data %>% group_by(country, countrycodes) %>% 
@@ -46,7 +50,11 @@ full_data$my_text = paste("The average rating is: " ,
                           "<BR>Country: ", as.character(full_data$country.x), sep="")
 
 
+
+# Add line break for tooltip display
+
 # Add version of title with a line break for tooltip display
+
 data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"), 
                             "<BR>",
                             str_match(data$title, "\\(.*"),
@@ -56,3 +64,5 @@ data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"),
 data$vintage <- as.integer(
   str_extract(data$title, "(?<=\\s)(19[^012]\\d|20\\d{2})(?=\\s)"))
 
+
+vintage <- sort(as.character(unique(data$vintage)))
