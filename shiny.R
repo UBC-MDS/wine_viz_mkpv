@@ -26,8 +26,10 @@ ui <- fluidPage(
             
             setSliderColor(c("#96027A", "#96027A"), c(1, 2)),
             
-            sliderInput("WineRating", "Select your desired rating range.",
-                        min = 80, max = 100, value = c(80,100)),
+            div("*Reviews are only published for wines rated 80+", style = "color: grey; font-size:80%"),
+            sliderInput("WineRating", 
+                        "Select your desired rating range.",
+                        min = 80, max = 100, value = c(80,100)), 
             
             sliderInput("WinePrice", "Select your desired price range.",
                         min = 0, max = 10000, value = c(0,10000)),
@@ -113,8 +115,8 @@ server <- function(input, output, session) {
                 group_by(variety) %>% 
                 summarise(avg_points = mean(points)) %>% 
                 filter(variety != "") %>% 
+                arrange(desc(avg_points)) %>% 
                 top_n(10) %>% 
-                #arrange(desc(avg_points)) %>% 
                 plot_ly(x = ~avg_points, 
                         y = ~variety,
                         color = ~avg_points, 
@@ -125,7 +127,7 @@ server <- function(input, output, session) {
                         textposition = 'outside') %>% 
                 layout(xaxis = list(range = c(80, 100), title = "Average Rating"), 
                        yaxis = list(title = "Variety", tickangle = 45), font = list(size = 10),
-                       title = "Top 10 Varieties with Ratings"
+                       title = "Which Varieties have <BR> the highest ratings?"
                        ) 
             %>% hide_colorbar()) 
 
@@ -145,7 +147,7 @@ server <- function(input, output, session) {
                                          sep = ""))) +
                  geom_jitter(alpha = .5, color = "#96027A", width = .15) +
                  theme_bw() +
-                 labs(title = "Price vs. Ratings", x = "Rating", y = "Price" ) +
+                 labs(title = "Price vs. Ratings", x = "Rating (score out of 100)", y = "Price (USD)" ) +
                  theme(legend.position="none",
                        panel.border = element_blank(),
                        panel.grid.major = element_blank(),
