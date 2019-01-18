@@ -15,3 +15,24 @@ On the right hand side, we first have a world map showing the average rating for
 Below our choropleth map, we have two plots. One is the Top 10 Varieties with their average ratings. We chose to give every variety of grape it's own colour, within the same red-purple colour palette. The aim was to have the horizontal bar plot be sorted in a descending order with the highest rated grape variety on top, however `plotly` sorts do not work well with `dplyr` sorts and filters, we aim to solve that issue for milestone 3. The scatter plot next to it looks at each bottle and plots it with its price and the rating. This plot contains much more information in it's tooltip with the wine's name, price, vintage, and nation.
 
 Our vision has stayed roughly the same since our initial sketch, except for a couple details. Our original sketch was made in Tableau and Shiny has a few limitations that makes the smaller details of the application more difficult to implement. The original goal of our application was to make an exploratory wine application and I believe that is still our goal. Our application has the functionality of an exploratory app due to the many filters and specifications one could either dig deep into or just choose to have a broader look for world wine ratings. Our app does what we set out to facilitate with a few limitations on details about each plot, which we originally intended to deliver through the tooltips. We aim to include this functionality for our next milestone.
+
+
+## Screenshots
+
+This is the initial view of our app with all of the features selected to be "Select All":
+
+![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-full.png)
+
+
+
+This is a filtered view of our app to only include wines from the Niagara region in Canada:
+![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-filtered.png)
+
+
+This shows our conditional filtering within our dropdown menus. When "Canada" is select as the country, only regions within Canada are shown. 
+![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-filtered.png)
+
+
+This view shows what is included within our tooltips in our Plotly graphs. 
+![](https://github.com/mkeyim/wine_viz_mkpv/blob/master/img/milestone2-tooltip.png)
+
