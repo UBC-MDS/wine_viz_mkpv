@@ -18,11 +18,9 @@ data <- data %>%
 
 #filter values
 country <- as.character(unique(data$country))
-#country<- c(country, c("(All)","(Deselect All)"))
 country <- sort(country)
 region <- as.character(unique(data$region_1))
 variety <- as.character(unique(data$variety))
-#variety <- c(variety, c("(All)","(Deselect All)"))
 variety <- sort(variety)
 
 
@@ -54,16 +52,17 @@ full_data$my_text = paste("The average rating is: " ,
 
 
 # Add line break for tooltip display
+
+# Add version of title with a line break for tooltip display
+
 data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"), 
                             "<BR>",
                             str_match(data$title, "\\(.*"),
                             sep = "")
-  
+
+# Add column for vintage  
+data$vintage <- as.integer(
+  str_extract(data$title, "(?<=\\s)(19[^012]\\d|20\\d{2})(?=\\s)"))
 
 
-# testing
-
-#observeEvent(
-#  input$WineCountry,
-#  updateSelectInput(session, "WineRegion", "Choose a Region", 
-#                    choices = data$region_1[data$country==input$WineCountry]))
+vintage <- sort(as.character(unique(data$vintage)))
