@@ -151,8 +151,6 @@ server <- function(input, output, session) {
                        panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(),
                        axis.line = element_line(colour = "#E8E8E8"),
-                       axis.text.x=element_blank(),          
-                       axis.text.y=element_blank(),
                        axis.ticks=element_blank(),
                        axis.text=element_text(size=6),
                        plot.title = element_text(hjust = 0.5, size = 11))
