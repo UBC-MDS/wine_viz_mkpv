@@ -76,24 +76,24 @@ server <- function(input, output) {
                 layout(xaxis = list(range = c(80, 100)), showlegend=FALSE )
             %>% hide_colorbar())
 
-    output$price_rate <- renderPlotly({
-        
-        # build plot with ggplot syntax
-        p <- data_filter() %>%
-                ggplot(aes(x = points,
-                           y = price,
-                           colour = 'blue',
-                           text = paste(title_wrapped, 
-                                        "  |  $",  price,
-                                        " Points:", points, 
-                                        " Var:", variety,
-                                        sep = ""))) +
-                geom_jitter(alpha = .5, color = 'cyan4', width = .15) +
-                theme_bw() +
-                theme(legend.position="none")
-        
-        ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
-    })
+    # output$price_rate <- renderPlotly({
+    #     
+    #     # build plot with ggplot syntax
+    #     p <- data_filter() %>%
+    #             ggplot(aes(x = points,
+    #                        y = price,
+    #                        colour = 'blue',
+    #                        text = paste(title_wrapped, 
+    #                                     "  |  $",  price,
+    #                                     " Points:", points, 
+    #                                     " Var:", variety,
+    #                                     sep = ""))) +
+    #             geom_jitter(alpha = .5, color = 'cyan4', width = .15) +
+    #             theme_bw() +
+    #             theme(legend.position="none")
+    #     
+    #     ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
+    # })
     
 }
 
