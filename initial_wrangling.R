@@ -51,16 +51,15 @@ full_data$my_text = paste("The average rating is: " ,
 
 
 
-# Add line break for tooltip display
 
 # Add version of title with a line break for tooltip display
+data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"),
 
-data$title_wrapped <- paste(str_match(data$title, ".*(?=\\s\\()"), 
                             "<BR>",
                             str_match(data$title, "\\(.*"),
                             sep = "")
 
-# Add column for vintage  
+# Add column for vintage
 data$vintage <- as.integer(
   str_extract(data$title, "(?<=\\s)(19[^012]\\d|20\\d{2})(?=\\s)"))
 
