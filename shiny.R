@@ -154,8 +154,10 @@ server <- function(input, output, session) {
                        panel.grid.minor = element_blank(),
                        axis.line = element_line(colour = "#E8E8E8"),
                        axis.ticks=element_blank(),
-                       axis.text=element_text(size=6),
-                       plot.title = element_text(hjust = 0.5, size = 11))
+                       axis.text=element_text(size=8),
+                       axis.title.x = element_text(size= 9, colour = '#5a5a5a'),
+                       axis.title.y = element_text(size = 9, colour = '#5a5a5a'),
+                       plot.title = element_text(hjust = 0.5, size = 11, colour = '#5a5a5a'))
          
          ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
      })
