@@ -26,8 +26,10 @@ ui <- fluidPage(
             
             setSliderColor(c("#96027A", "#96027A"), c(1, 2)),
             
-            sliderInput("WineRating", "Select your desired rating range.",
-                        min = 80, max = 100, value = c(80,100)),
+            div("*Reviews are only published for wines rated 80+", style = "color: grey; font-size:80%"),
+            sliderInput("WineRating", 
+                        "Select your desired rating range.",
+                        min = 80, max = 100, value = c(80,100)), 
             
             sliderInput("WinePrice", "Select your desired price range.",
                         min = 0, max = 10000, value = c(0,10000)),
