@@ -81,7 +81,10 @@ server <- function(input, output, session) {
     #})
     
     data_filter <- reactive({
-        data %>% 
+      
+
+      
+      data %>% 
             filter(points > input$WineRating[1],
                    points < input$WineRating[2],
                    price > input$WinePrice[1],
@@ -109,15 +112,23 @@ server <- function(input, output, session) {
                            projection = list(type = 'Mercator'))
             ) %>% hide_colorbar())
     
-    output$variety <- renderPlotly(
-            data_filter() %>% 
+    output$variety <- renderPlotly({
+            
+            # Prep filtered data for plot
+            varieties_table <- data_filter() %>% 
                 select(variety, points) %>% 
                 group_by(variety) %>% 
                 summarise(avg_points = mean(points)) %>% 
                 filter(variety != "") %>% 
                 arrange(desc(avg_points)) %>% 
-                top_n(10) %>% 
-                plot_ly(x = ~avg_points, 
+                top_n(10)
+            
+            # Display message if no data selected
+            validate(need(varieties_table$variety, message = "No wines selected"))
+            
+            # Draw Plot           
+            varieties_table %>% 
+              plot_ly(x = ~avg_points, 
                         y = ~variety,
                         color = ~avg_points, 
                         type = 'bar',
@@ -128,13 +139,18 @@ server <- function(input, output, session) {
                 layout(xaxis = list(range = c(80, 100), title = "Average Rating"), 
                        yaxis = list(title = "Variety", tickangle = 45), font = list(size = 10),
                        title = "Which Varieties have <BR> the highest ratings?"
-                       ) 
-            %>% hide_colorbar()) 
+                       ) %>% 
+              hide_colorbar()
+    }) 
 
 
 
      output$price_rate <- renderPlotly({
          
+       
+         # Display message if no data selected
+        validate(need(data_filter()$points, message = "No wines selected"))
+       
          # build plot with ggplot syntax
          p <- data_filter() %>%
                  ggplot(aes(x = points,
