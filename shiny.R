@@ -19,37 +19,45 @@ ui <- fluidPage(
       .irs-bar-edge {background: purple; border: 1px solid purple; height: 15px; border-radius: 0px; width: 20px;}
     "),
     
-    titlePanel("Wine Rating App", 
+    titlePanel("Wine Explorer", 
                windowTitle = "Wine app"),
     sidebarLayout(
         sidebarPanel(
             
             setSliderColor(c("#96027A", "#96027A"), c(1, 2)),
+            width = 3,
             
-            div("*Reviews are only published for wines rated 80+", style = "color: grey; font-size:80%"),
+            div("*Reviews are only published for wines rated 80+ points", style = "color: grey; font-size:80%"),
+            
             sliderInput("WineRating", 
                         "Select your desired rating range.",
                         min = 80, max = 100, value = c(80,100)), 
             
-            sliderInput("WinePrice", "Select your desired price range.",
-                        min = 0, max = 10000, value = c(0,10000)),
+            pickerInput("WinePriceCategory", 
+                        label = "Select your desired price range ($USD).",
+                        choices = priceCategory,
+                        multiple = TRUE,
+                        options = list(`actions-box` = TRUE),
+                        selected = priceCategory),
             
             pickerInput("WineCountry", 
                         label = "Choose a Country",
                         choices = country,
                         multiple = TRUE,
+                        selected = "Canada"),
+            
+            pickerInput('WineRegion', 
+                        'Region Selection',
+                        choices = NULL,
+                        multiple = TRUE,
                         options = list(`actions-box` = TRUE),
-                        selected = country),
-            
-            uiOutput('WineRegion'),
-            
+                        selected = region),
             
             pickerInput("WineVintage", 
                         label = "Choose a Vintage Year",
-                        choices = vintage,
+                        choices = NULL,
                         multiple = TRUE,
-                        options = list(`actions-box` = TRUE),
-                        selected = vintage)),
+                        options = list(`actions-box` = TRUE))),
             
                 
         mainPanel(plotlyOutput("map"),
@@ -64,35 +72,58 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
     
-    output$WineRegion <- renderUI({
-        if (is.null(input$WineCountry) || input$WineCountry == ""){return()}
-        else pickerInput('WineRegion', "Region", 
-                         choices = c(unique(sort(data$region_1[which(data$country == input$WineCountry)]))),
-                         options = list(`actions-box` = TRUE),
-                         multiple = TRUE)
-    })
-    
-    #output$WineVariety <- renderUI({
-    #    pickerInput('WineVariety', "Variety", 
-    #                     choices = c(unique(sort(data$variety[which(data$country == input$WineCountry)]))),
-    #                     multiple = TRUE, 
-    #                     options = list(`actions-box` = TRUE),
-    #                     selected = variety)
-    #})
+  observe(print(input$WineCountry))
+  
+  # change province choices based on country
+  
+  observeEvent(input$WineCountry,{
+    updateSelectInput(session,'WineRegion',
+                           choices = data %>% 
+                              filter(country %in% input$WineCountry) %>%
+                              distinct(region_1))
+  })
+  
+  observeEvent(c(input$WineCountry,input$WineRegion),{
+    updatePickerInput(session,'WineVintage',
+                      choices = data %>% 
+                        filter(country %in% input$WineCountry,
+                               region_1 %in% input$WineRegion) %>%
+                        distinct(vintage) %>% 
+                        arrange(desc(vintage)))
+  })
+  
     
     data_filter <- reactive({
-      
-
-      
-      data %>% 
-            filter(points > input$WineRating[1],
-                   points < input$WineRating[2],
-                   price > input$WinePrice[1],
-                   price < input$WinePrice[2],
-                   country == input$WineCountry)
-        })
-    
-    
+      if(is.null(input$WineRegion) & 
+         is.null(input$WineVintage)) {data %>% filter(points > input$WineRating[1],
+                                                      points < input$WineRating[2],
+                                                      priceCategory %in% input$WinePriceCategory,
+                                                      country == input$WineCountry)
+        
+      } else if (is.null(input$WineRegion)){data %>% 
+                                                filter(points > input$WineRating[1],
+                                                       points < input$WineRating[2],
+                                                       priceCategory %in% input$WinePriceCategory,
+                                                       country == input$WineCountry,
+                                                       vintage %in% input$WineVintage)
+        
+      } else if(is.null(input$WineVintage)){data %>% 
+                                                  filter(points > input$WineRating[1],
+                                                         points < input$WineRating[2],
+                                                         priceCategory %in% input$WinePriceCategory,
+                                                         country == input$WineCountry,
+                                                         region_1 %in% input$WineRegion)
+        
+      } else{
+              data %>% 
+                filter(points > input$WineRating[1],
+                       points < input$WineRating[2],
+                       priceCategory %in% input$WinePriceCategory,
+                       country == input$WineCountry,
+                       region_1 %in% input$WineRegion,
+                       vintage %in% input$WineVintage)
+        }})
+  
     
     output$map <- renderPlotly(
         full_data %>% #filter(country.x == input$WineCountry) %>% 
@@ -110,7 +141,14 @@ server <- function(input, output, session) {
                 geo = list(showframe = FALSE,
                            showcoastlines = FALSE,
                            projection = list(type = 'Mercator'))
-            ) %>% hide_colorbar())
+            ) %>% 
+        colorbar(thickness = 15, len = 1,
+                 title = "Average<BR>Rating", 
+                 outlinecolor = "#EEEEEE",
+                 nticks = 4,
+                 titlefont = list(size = 10), 
+                 tickfont = list(size = 8))
+          )
     
     output$variety <- renderPlotly({
             
@@ -135,10 +173,13 @@ server <- function(input, output, session) {
                         colors = 'RdPu',
                         orientation = 'h',
                         text = ~round(avg_points,0),
-                        textposition = 'outside') %>% 
+                        textposition = 'outside'
+                      ) %>% 
                 layout(xaxis = list(range = c(80, 100), title = "Average Rating"), 
-                       yaxis = list(title = "Variety", tickangle = 45), font = list(size = 10),
-                       title = "Which Varieties have <BR> the highest ratings?"
+                       yaxis = list(categoryarray = ~variety, categoryorder = "array",
+                                    title = "", tickangle = 0), 
+                       font = list(size = 10),
+                       title = "Which Varieties have the highest ratings?"
                        ) %>% 
               hide_colorbar()
     }) 
@@ -146,7 +187,6 @@ server <- function(input, output, session) {
 
 
      output$price_rate <- renderPlotly({
-         
        
          # Display message if no data selected
         validate(need(data_filter()$points, message = "No wines selected"))

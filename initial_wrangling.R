@@ -12,9 +12,17 @@ data$country <- as.factor(data$country)
 data <- data %>% 
   select(-X, -region_2, -taster_twitter_handle) %>% 
   filter(country != "",
-         variety != "")%>% 
+         variety != "",
+         price != "")%>% 
   mutate(country = if_else(country =="England", "United Kingdom", as.character(country)),
-         countrycodes = countrycode(country, 'country.name', 'iso3c'))
+         countrycodes = countrycode(country, 'country.name', 'iso3c'),
+         region_1 = if_else(region_1 != "", region_1, "N/A"),
+         priceCategory = ifelse(price <= 10, "($0 - $10) Value",
+                         ifelse(price > 10 & price <=30, "($11 - $30) Popular", 
+                         ifelse(price > 30 & price <= 100, "($30 - $100) Premium",
+                         ifelse(price > 100 & price <= 300, "($100 - $300) Ultra Premium", 
+                                "($300+ Luxury)")
+                         ))))
 
 #filter values
 country <- as.character(unique(data$country))
@@ -22,6 +30,7 @@ country <- sort(country)
 region <- as.character(unique(data$region_1))
 variety <- as.character(unique(data$variety))
 variety <- sort(variety)
+priceCategory <- as.character(unique(data$priceCategory))
 
 
 
