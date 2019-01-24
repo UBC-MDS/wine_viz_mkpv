@@ -53,10 +53,9 @@ full_data <- full_data %>%
   filter(country.x != "Antarctica") %>% 
   mutate(avg_rating = if_else(is.na(avg_rating), 80 ,avg_rating))
 
-full_data$my_text = paste("The average rating is: " , 
-                          if_else(full_data$avg_rating == 80, "No data", 
-                                  as.character(round(full_data$avg_rating,2))), 
-                          "<BR>Country: ", as.character(full_data$country.x), sep="")
+full_data$my_text = if_else(full_data$avg_rating == 80, "",
+  paste("Avg. Wine Rating: " , as.character(round(full_data$avg_rating,2)), 
+                          "<BR>Country: ", as.character(full_data$country.x), sep=""))
 
 
 
