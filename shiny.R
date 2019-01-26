@@ -5,8 +5,11 @@ library(ggplot2)
 library(shinyWidgets)
 library(plotly)
 library(viridisLite)
+library(beeswarm)
+library(ggbeeswarm)
 
 # run the data wrangling script
+# this allows an updated file to be used without requiring any manual wrangling
 source("initial_wrangling.R")
 
 ui <- fluidPage(
@@ -44,6 +47,7 @@ ui <- fluidPage(
                         label = "Choose a Country",
                         choices = country,
                         multiple = TRUE,
+                        options = list(`actions-box` = TRUE),
                         selected = "Canada"),
             
             pickerInput('WineRegion', 
@@ -94,24 +98,25 @@ server <- function(input, output, session) {
   
     
     data_filter <- reactive({
+      #req(input$WineCountry)
       if(is.null(input$WineRegion) & 
          is.null(input$WineVintage)) {data %>% filter(points > input$WineRating[1],
                                                       points < input$WineRating[2],
                                                       priceCategory %in% input$WinePriceCategory,
-                                                      country == input$WineCountry)
+                                                      country %in% input$WineCountry)
         
       } else if (is.null(input$WineRegion)){data %>% 
                                                 filter(points > input$WineRating[1],
                                                        points < input$WineRating[2],
                                                        priceCategory %in% input$WinePriceCategory,
-                                                       country == input$WineCountry,
+                                                       country %in% input$WineCountry,
                                                        vintage %in% input$WineVintage)
         
       } else if(is.null(input$WineVintage)){data %>% 
                                                   filter(points > input$WineRating[1],
                                                          points < input$WineRating[2],
                                                          priceCategory %in% input$WinePriceCategory,
-                                                         country == input$WineCountry,
+                                                         country %in% input$WineCountry,
                                                          region_1 %in% input$WineRegion)
         
       } else{
@@ -119,7 +124,7 @@ server <- function(input, output, session) {
                 filter(points > input$WineRating[1],
                        points < input$WineRating[2],
                        priceCategory %in% input$WinePriceCategory,
-                       country == input$WineCountry,
+                       country %in% input$WineCountry,
                        region_1 %in% input$WineRegion,
                        vintage %in% input$WineVintage)
         }})
@@ -192,21 +197,29 @@ server <- function(input, output, session) {
      output$price_rate <- renderPlotly({
        
          # Display message if no data selected
-        validate(need(data_filter()$points, message = "No wines selected"))
+        validate(
+          need(data_filter()$points, message = "No wines selected")
+          )
        
          # build plot with ggplot syntax
          p <- data_filter() %>%
                  ggplot(aes(x = points,
                             y = price,
                             color = "#96027A",
-                            text = paste("Title: ", title_wrapped, 
-                                         "<BR>", "Price: $",  price,
-                                         "<BR>", "Rating: ", points, "points", 
-                                        "<BR>", "Variety: ", variety,
+                            alpha = 0.5, 
+                            text = paste(title_wrapped, 
+                                         "<BR>$",  price,
+                                         "<BR>", points, " points", 
+                                        "<BR>", variety,
                                          sep = ""))) +
-                 geom_jitter(alpha = .5, color = "#96027A", width = .15) +
+                 geom_beeswarm(color = "#96027A", cex = 1.1, size = 2) +
+                 #geom_jitter(alpha = .5, color = "#96027A", width = .15) +
                  theme_bw() +
                  labs(title = "Price vs. Ratings", x = "Rating (score out of 100)", y = "Price (USD)" ) +
+                 scale_y_continuous(
+                   labels = scales::number_format(accuracy = 0.1)) +
+                 scale_x_continuous(
+                   labels = scales::number_format(accuracy = 0.1)) +
                  theme(legend.position="none",
                        panel.border = element_blank(),
                        panel.grid.major = element_blank(),
