@@ -14,10 +14,8 @@ We have created a data visualization application using R Shiny which will allow 
 
 [Deployed Shiny App](https://pall-v.shinyapps.io/wine_viz_mkpv/)
 
-Feedback given for milestone 3 during lab:
+## Feedback given for 2 other groups for milestone 3:
+
 - https://github.com/UBC-MDS/violent_crimes_usa/issues/12
 - https://github.com/UBC-MDS/Crime_Busters/issues/29
-Includes:
-[Proposal](https://github.com/mkeyim/wine_viz_mkpv/blob/master/doc/proposal.md)
 
-[App](https://pall-v.shinyapps.io/wine_viz_mkpv/)
