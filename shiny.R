@@ -19,16 +19,16 @@ ui <- fluidPage(
       .irs-bar-edge {background: purple; border: 1px solid purple; height: 15px; border-radius: 0px; width: 20px;}
     "),
     
-    titlePanel("Wine Explorer", 
+    titlePanel("World Wine Explorer", 
                windowTitle = "Wine app"),
     sidebarLayout(
         sidebarPanel(
-            
             setSliderColor(c("#96027A", "#96027A"), c(1, 2)),
             width = 3,
-            
+            div("This application will help you explore the world of wine!", style = "color: grey; font-size:80%"),
+            div("     .", style = "color: #f5f5f5; font-size:80%"),
             div("*Reviews are only published for wines rated 80+ points", style = "color: grey; font-size:80%"),
-            
+            div("     .", style = "color: #f5f5f5; font-size:80%"),
             sliderInput("WineRating", 
                         "Select your desired rating range.",
                         min = 80, max = 100, value = c(80,100)), 
@@ -134,7 +134,8 @@ server <- function(input, output, session) {
                 colors = 'RdPu',
                 text = full_data$my_text, 
                 locations = ~countrycodes, 
-                marker = list(line = list(color = toRGB("grey"), width = 0.5))
+                marker = list(line = list(color = toRGB("grey"), width = 0.5)),
+                hoverinfo = "text"
             ) %>%
             layout(
                 title = 'Average Wine Ratings by Country',
@@ -172,8 +173,10 @@ server <- function(input, output, session) {
                         type = 'bar',
                         colors = 'RdPu',
                         orientation = 'h',
-                        text = ~round(avg_points,0),
-                        textposition = 'outside'
+                        text = ~paste("Average rating: ", round(avg_points,0)),
+                        textposition = 'outside',
+                      textfont = list(color = "#FFFFFF"),
+                      hoverinfo = 'text'
                       ) %>% 
                 layout(xaxis = list(range = c(80, 100), title = "Average Rating"), 
                        yaxis = list(categoryarray = ~variety, categoryorder = "array",
@@ -197,8 +200,8 @@ server <- function(input, output, session) {
                             y = price,
                             color = "#96027A",
                             text = paste("Title: ", title_wrapped, 
-                                         "<br>", "Price: $",  price,
-                                         "<BR> ", "Rating: ", points, 
+                                         "<BR>", "Price: $",  price,
+                                         "<BR>", "Rating: ", points, "points", 
                                         "<BR>", "Variety: ", variety,
                                          sep = ""))) +
                  geom_jitter(alpha = .5, color = "#96027A", width = .15) +
