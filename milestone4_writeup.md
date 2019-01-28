@@ -1,5 +1,9 @@
 # Milestone 4 Write Up
 
+Milestone 3 app:
+
+![](https://github.com/UBC-MDS/wine_viz_mkpv/blob/master/img/milestone4-before.png)
+
 Briefly discuss:
 
 What changes did you decide to implement given the time limit, and why do you think this is the best thing to focus on?
