@@ -193,7 +193,6 @@ server <- function(input, output, session) {
     }) 
 
 
-
      output$price_rate <- renderPlotly({
        
          # Display message if no data selected
@@ -201,35 +200,41 @@ server <- function(input, output, session) {
           need(data_filter()$points, message = "No wines selected")
           )
        
+       ch <- chull(data_filter()$points, data_filter()$price)
+       
+       
          # build plot with ggplot syntax
-         p <- data_filter() %>%
-                 ggplot(aes(x = points,
-                            y = price,
-                            color = "#96027A",
-                            alpha = 0.5, 
-                            text = paste(title_wrapped, 
-                                         "<BR>$",  price,
-                                         "<BR>", points, " points", 
-                                        "<BR>", variety,
-                                         sep = ""))) +
-                 geom_beeswarm(color = "#96027A", cex = 1.1, size = 2) +
-                 #geom_jitter(alpha = .5, color = "#96027A", width = .15) +
-                 theme_bw() +
-                 labs(title = "Price vs. Ratings", x = "Rating (score out of 100)", y = "Price (USD)" ) +
-                 scale_y_continuous(
-                   labels = scales::number_format(accuracy = 0.1)) +
-                 scale_x_continuous(
-                   labels = scales::number_format(accuracy = 0.1)) +
-                 theme(legend.position="none",
-                       panel.border = element_blank(),
-                       panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(),
-                       axis.line = element_line(colour = "#E8E8E8"),
-                       axis.ticks=element_blank(),
-                       axis.text=element_text(size=8),
-                       axis.title.x = element_text(size= 9, colour = '#5a5a5a'),
-                       axis.title.y = element_text(size = 9, colour = '#5a5a5a'),
-                       plot.title = element_text(hjust = 0.5, size = 11, colour = '#5a5a5a'))
+         #p <- data_filter() %>%
+       p <- ggplot(data = data_filter()) +
+         geom_path(data = data_filter()[ch,], aes(points, price), alpha=0.5) +
+         geom_beeswarm(aes(points, price), color = "#96027A", cex = 1.1, size = 1.5)
+                 # ggplot(aes(x = points,
+                 #            y = price,
+                 #            color = "#96027A",
+                 #            alpha = 0.5, 
+                 #            text = paste(title_wrapped, 
+                 #                         "<BR>$",  price,
+                 #                         "<BR>", points, " points", 
+                 #                        "<BR>", variety,
+                 #                         sep = ""))) +
+                 # geom_beeswarm(color = "#96027A", cex = 1.1, size = 2) +
+                 # #geom_jitter(alpha = .5, color = "#96027A", width = .15) +
+                 # theme_bw() +
+                 # labs(title = "Price vs. Ratings", x = "Rating (score out of 100)", y = "Price (USD)" ) +
+                 # scale_y_continuous(
+                 #   labels = scales::number_format(accuracy = 0.1)) +
+                 # scale_x_continuous(
+                 #   labels = scales::number_format(accuracy = 0.1)) +
+                 # theme(legend.position="none",
+                 #       panel.border = element_blank(),
+                 #       panel.grid.major = element_blank(),
+                 #       panel.grid.minor = element_blank(),
+                 #       axis.line = element_line(colour = "#E8E8E8"),
+                 #       axis.ticks=element_blank(),
+                 #       axis.text=element_text(size=8),
+                 #       axis.title.x = element_text(size= 9, colour = '#5a5a5a'),
+                 #       axis.title.y = element_text(size = 9, colour = '#5a5a5a'),
+                 #       plot.title = element_text(hjust = 0.5, size = 11, colour = '#5a5a5a'))
          
          ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
      })
