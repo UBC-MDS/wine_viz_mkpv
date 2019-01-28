@@ -13,57 +13,68 @@ library(ggbeeswarm)
 source("initial_wrangling.R")
 
 ui <- fluidPage(
-    #tags$style(HTML(".js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {background: purple}")),
-    #tags$style(HTML(".js-irs-1 .irs-single, .js-irs-1 .irs-bar-edge, .js-irs-1 .irs-bar {background: purple}")),
-    
-
+  
+    # colouring sliders purple to match theme
+    tags$style(HTML(".js-irs-0 .irs-to,.js-irs-0 .irs-from,.js-irs-0 .irs-bar-edge, .irs-bar {background: purple}")),
     tags$style(type = "text/css", "
       .irs-bar {width: 100%; height: 10px; background: purple; border-top: 1px solid purple; border-bottom: 1px solid purple;}
       .irs-bar-edge {background: purple; border: 1px solid purple; height: 15px; border-radius: 0px; width: 20px;}
     "),
     
+    # Changing sidebar  background colour
+    tags$style(".well {background-color: #fcf9fb;}"),
+    
     titlePanel("World Wine Explorer", 
                windowTitle = "Wine app"),
+    
     sidebarLayout(
         sidebarPanel(
             setSliderColor(c("#96027A", "#96027A"), c(1, 2)),
             width = 3,
-            div("This application will help you explore the world of wine!", style = "color: grey; font-size:80%"),
+            div("This application will help you explore the world of wine!", 
+                style = "color: grey; font-size:80%"),
             div("     .", style = "color: #f5f5f5; font-size:80%"),
-            div("*Reviews are only published for wines rated 80+ points", style = "color: grey; font-size:80%"),
-            div("     .", style = "color: #f5f5f5; font-size:80%"),
+            div("*Reviews are only published for wines rated 80+ points", 
+                style = "color: grey; font-size:80%"),
+            div(".", style = "color: #f5f5f5; font-size:80%"),
+            
+            #rating range slider filter
             sliderInput("WineRating", 
-                        "Select your desired rating range.",
+                        "Rating range",
                         min = 80, max = 100, value = c(80,100)), 
             
+            #price range dropdown filter
             pickerInput("WinePriceCategory", 
-                        label = "Select your desired price range ($USD).",
+                        label = "Price range ($USD).",
                         choices = priceCategory,
                         multiple = TRUE,
                         options = list(`actions-box` = TRUE),
-                        selected = priceCategory),
+                        selected = '($11 - $30) Popular'),
             
+            #country dropdown filter
             pickerInput("WineCountry", 
-                        label = "Choose a Country",
+                        label = "Country",
                         choices = country,
                         multiple = TRUE,
                         options = list(`actions-box` = TRUE),
                         selected = "Canada"),
             
+            #region dropdown filter
             pickerInput('WineRegion', 
-                        'Region Selection',
+                        'Region',
                         choices = NULL,
                         multiple = TRUE,
                         options = list(`actions-box` = TRUE),
                         selected = region),
             
+            #vintage dropdown filter
             pickerInput("WineVintage", 
-                        label = "Choose a Vintage Year",
+                        label = "Vintage",
                         choices = NULL,
                         multiple = TRUE,
                         options = list(`actions-box` = TRUE))),
             
-                
+        #setting layout of app
         mainPanel(plotlyOutput("map"),
                   fluidRow(
                       column(6,
@@ -78,8 +89,7 @@ server <- function(input, output, session) {
     
   observe(print(input$WineCountry))
   
-  # change province choices based on country
-  
+  # changing region choices based on country
   observeEvent(input$WineCountry,{
     updateSelectInput(session,'WineRegion',
                            choices = data %>% 
@@ -87,6 +97,7 @@ server <- function(input, output, session) {
                               distinct(region_1))
   })
   
+  # updating wine vintage filter based on country and/or region
   observeEvent(c(input$WineCountry,input$WineRegion),{
     updatePickerInput(session,'WineVintage',
                       choices = data %>% 
@@ -98,7 +109,7 @@ server <- function(input, output, session) {
   
     
     data_filter <- reactive({
-      #req(input$WineCountry)
+      # making the filters reactive to eachother's inputs
       if(is.null(input$WineRegion) & 
          is.null(input$WineVintage)) {data %>% filter(points > input$WineRating[1],
                                                       points < input$WineRating[2],
@@ -129,9 +140,9 @@ server <- function(input, output, session) {
                        vintage %in% input$WineVintage)
         }})
   
-    
+    #plotly world map with world average wine ratings
     output$map <- renderPlotly(
-        full_data %>% #filter(country.x == input$WineCountry) %>% 
+        full_data %>% 
         plot_geo() %>%
             add_trace(
                 z = ~avg_rating,
@@ -156,6 +167,7 @@ server <- function(input, output, session) {
                  tickfont = list(size = 8))
           )
     
+    # top average wine variety horizontal bar plot
     output$variety <- renderPlotly({
             
             # Prep filtered data for plot
@@ -183,9 +195,10 @@ server <- function(input, output, session) {
                       textfont = list(color = "#FFFFFF"),
                       hoverinfo = 'text'
                       ) %>% 
-                layout(xaxis = list(range = c(80, 100), title = "Average Rating"), 
+                layout(xaxis = list(range = c(80, 100), title = "Average Rating", 
+                                    linecolor = "#E8E8E8", gridcolor = "#FFFFFF"), 
                        yaxis = list(categoryarray = ~variety, categoryorder = "array",
-                                    title = "", tickangle = 0), 
+                                    title = "", tickangle = 0, linecolor = "#E8E8E8"), 
                        font = list(size = 10),
                        title = "Which Varieties have the highest ratings?"
                        ) %>% 
@@ -193,7 +206,7 @@ server <- function(input, output, session) {
     }) 
 
 
-
+     # price vs. rating jitter/swam plot
      output$price_rate <- renderPlotly({
        
          # Display message if no data selected
