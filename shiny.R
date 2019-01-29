@@ -235,10 +235,7 @@ server <- function(input, output, session) {
     }) 
 
 
-<<<<<<< HEAD
-=======
-     # price vs. rating jitter/swam plot
->>>>>>> upstream/master
+     # price vs. rating jitter/swram plot
      output$price_rate <- renderPlotly({
        
          # Display message if no data selected
