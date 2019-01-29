@@ -247,7 +247,7 @@ server <- function(input, output, session) {
          geom_path(data = get_efficiency_frontier(data_filter()), 
                    aes(points, price), 
                    alpha=0.5, 
-                   color = "blue", 
+                   color = "purple", 
                    size = 1) +
          geom_beeswarm(aes(points, price,
                            text = paste(title_wrapped, 
