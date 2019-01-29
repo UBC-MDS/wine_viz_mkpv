@@ -7,6 +7,7 @@ library(plotly)
 library(viridisLite)
 library(beeswarm)
 library(ggbeeswarm)
+library(dplyr)
 
 # run the data wrangling script
 # this allows an updated file to be used without requiring any manual wrangling
@@ -75,7 +76,35 @@ ui <- fluidPage(
     )
 
 server <- function(input, output, session) {
+  
+  # Returns the points and price variables of the efficiency frontier for data
+  get_efficiency_frontier <- function(data){
+    # Get convex hull around the data
+    ch <- chull(data$points, data$price)
+    ch_data = data[ch, c("points", "price")]
     
+    # Find the start and end points for the efficiency frontier
+    # Note: 'data$points' is the wine rating variable... not all the data points
+    frontier_start_points <- min(ch_data$points)
+    frontier_start_price <- min(ch_data[ch_data$points == frontier_start_points, ]$price)
+    frontier_end_points <- max(ch_data$points)
+    frontier_end_price <- min(ch_data[ch_data$points == frontier_end_points, ]$price)
+    x <- c(frontier_start_points, frontier_end_points)
+    y <- c(frontier_start_price, frontier_end_price)
+    
+    # Formula for trimming line so we can keep just the lower part of the convex hull
+    lm <- broom::tidy(lm(y ~ x))
+    intercept = lm[[1, 'estimate']]
+    slope = lm[[2, 'estimate']]
+    
+    # Trim the convex hull to get our efficiency frontier
+    efficiency_frontier <- ch_data %>% 
+      filter(price <= points * slope + intercept + 1) %>% 
+      arrange(points)
+    return(efficiency_frontier)
+  }
+    
+  
   observe(print(input$WineCountry))
   
   # change province choices based on country
@@ -200,41 +229,38 @@ server <- function(input, output, session) {
           need(data_filter()$points, message = "No wines selected")
           )
        
-       ch <- chull(data_filter()$points, data_filter()$price)
-       
-       
-         # build plot with ggplot syntax
-         #p <- data_filter() %>%
        p <- ggplot(data = data_filter()) +
-         geom_path(data = data_filter()[ch,], aes(points, price), alpha=0.5) +
-         geom_beeswarm(aes(points, price), color = "#96027A", cex = 1.1, size = 1.5)
-                 # ggplot(aes(x = points,
-                 #            y = price,
-                 #            color = "#96027A",
-                 #            alpha = 0.5, 
-                 #            text = paste(title_wrapped, 
-                 #                         "<BR>$",  price,
-                 #                         "<BR>", points, " points", 
-                 #                        "<BR>", variety,
-                 #                         sep = ""))) +
-                 # geom_beeswarm(color = "#96027A", cex = 1.1, size = 2) +
-                 # #geom_jitter(alpha = .5, color = "#96027A", width = .15) +
-                 # theme_bw() +
-                 # labs(title = "Price vs. Ratings", x = "Rating (score out of 100)", y = "Price (USD)" ) +
-                 # scale_y_continuous(
-                 #   labels = scales::number_format(accuracy = 0.1)) +
-                 # scale_x_continuous(
-                 #   labels = scales::number_format(accuracy = 0.1)) +
-                 # theme(legend.position="none",
-                 #       panel.border = element_blank(),
-                 #       panel.grid.major = element_blank(),
-                 #       panel.grid.minor = element_blank(),
-                 #       axis.line = element_line(colour = "#E8E8E8"),
-                 #       axis.ticks=element_blank(),
-                 #       axis.text=element_text(size=8),
-                 #       axis.title.x = element_text(size= 9, colour = '#5a5a5a'),
-                 #       axis.title.y = element_text(size = 9, colour = '#5a5a5a'),
-                 #       plot.title = element_text(hjust = 0.5, size = 11, colour = '#5a5a5a'))
+         geom_path(data = get_efficiency_frontier(data_filter()), 
+                   aes(points, price), 
+                   alpha=0.5, 
+                   color = "blue", 
+                   size = 1) +
+         geom_beeswarm(aes(points, price,
+                           text = paste(title_wrapped, 
+                                        "<BR>$",  price,
+                                        "<BR>", points, " points", 
+                                        "<BR>", variety,
+                                        sep = "")), 
+                       color = "#96027A", 
+                       alpha = 0.5,
+                       cex = 1.1, 
+                       size = 1.5) +
+         theme_bw() +
+         labs(title = "Price vs. Ratings", x = "Rating (score out of 100)", y = "Price (USD)" ) +
+         scale_y_continuous(
+           labels = scales::number_format(accuracy = 0.1)) +
+         scale_x_continuous(
+           labels = scales::number_format(accuracy = 0.1)) +
+         theme(legend.position="none",
+               panel.border = element_blank(),
+               panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank(),
+               axis.line = element_line(colour = "#E8E8E8"),
+               axis.ticks=element_blank(),
+               axis.text=element_text(size=8),
+               axis.title.x = element_text(size= 9, colour = '#5a5a5a'),
+               axis.title.y = element_text(size = 9, colour = '#5a5a5a'),
+               plot.title = element_text(hjust = 0.5, size = 11, colour = '#5a5a5a'))
          
          ggplotly(p, tooltip = "text") # tooltip argument to suppress the default information and just show the custom text
      })
